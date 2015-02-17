@@ -1,3 +1,5 @@
+require 'uri'
+
 class Params
     # use initialize to merge params from
     # 1. query string
