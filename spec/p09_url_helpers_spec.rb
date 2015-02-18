@@ -1,5 +1,5 @@
 require 'webrick'
-require 'url_helpers'
+require 'URLHelper'
 require 'controller_base'
 require 'router'
 

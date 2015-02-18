@@ -43,7 +43,9 @@ class Route
         pattern = /^#{pattern}$/
       end
       @routes << Route.new(pattern, method, controller_class, action_name)
-    if new_url.nil?
+      if controller_class.to_s.slice(/(?<name>.+)Controller/, "name").nil?
+        return "This is not controller syntax."
+      elsif new_url.nil?
         URLHelper.new(controller_class, action_name).create
       else
         controller_class.add_custom_url(new_url)
@@ -81,5 +83,5 @@ class Route
         route.run(req, res)
       end
     end
-    
+
   end
