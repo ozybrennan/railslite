@@ -1,8 +1,8 @@
 require 'webrick'
-require 'phase8/flash'
-require 'phase8/controller_base'
+require 'flash'
+require 'controller_base'
 
-describe Phase8::Flash do
+describe Flash do
   let(:req) { WEBrick::HTTPRequest.new(Logger: nil) }
   let(:res) { WEBrick::HTTPResponse.new(HTTPVersion: '1.0') }
   let(:cook) do
@@ -11,28 +11,28 @@ describe Phase8::Flash do
 
   it "deserializes json cookie if one exists" do
     req.cookies << cook
-    flash = Phase8::Flash.new(req)
+    flash = Flash.new(req)
     expect(flash['xyz']).to eq('abc')
   end
 
   describe '#now' do
     it 'returns a hash' do
-      flash = Phase8::Flash.new(req)
+      flash = Flash.new(req)
       expect(flash.now).to respond_to(:[])
     end
 
     it 'does not persist beyond first request' do
-      flash = Phase8::Flash.new(req)
+      flash = Flash.new(req)
       flash.now[:errors] = "Error"
       flash.store_flash(res)
       simulate_req_res!(req, res)
-      flash2 = Phase8::Flash.new(req)
+      flash2 = Flash.new(req)
       expect(flash2[:errors]).to be_nil
       expect(flash2.now[:errors]).to be_nil
     end
 
     it 'allows access to the data from top level flash :[]' do
-      flash = Phase8::Flash.new(req)
+      flash = Flash.new(req)
       flash.now[:errors] = "Error"
       expect(flash[:errors]).to eq("Error")
     end
@@ -41,7 +41,7 @@ describe Phase8::Flash do
   describe "#store_flash" do
     context "without cookies in request" do
       before(:each) do
-        flash = Phase8::Flash.new(req)
+        flash = Flash.new(req)
         flash['first_key'] = 'first_val'
         flash.store_flash(res)
       end
@@ -64,39 +64,39 @@ describe Phase8::Flash do
       end
 
       it "reads the pre-existing cookie data into hash" do
-        flash = Phase8::Flash.new(req)
+        flash = Flash.new(req)
         expect(flash['pho']).to eq('soup')
       end
     end
   end
 
   it "can be accessed using either strings or symbols" do
-    flash = Phase8::Flash.new(req)
+    flash = Flash.new(req)
     flash["notice"] = "test"
     expect(flash[:notice]).to eq("test")
   end
 
   it "only saves data stored directly in flash for one more request" do
-    flash = Phase8::Flash.new(req)
+    flash = Flash.new(req)
     flash['first_request'] = 'first'
     flash.store_flash(res)
 
     simulate_req_res!(req, res)
 
-    flash2 = Phase8::Flash.new(req)
+    flash2 = Flash.new(req)
     flash2.store_flash(res)
     expect(flash2['first_request']).to eq('first')
 
     simulate_req_res!(req, res)
 
-    flash3 = Phase8::Flash.new(req)
+    flash3 = Flash.new(req)
     expect(flash3['first_request']).to be_nil
   end
 end
 
-describe Phase8::ControllerBase do
+describe ControllerBase do
   before(:all) do
-    class CatsController < Phase8::ControllerBase
+    class CatsController < ControllerBase
     end
   end
   after(:all) { Object.send(:remove_const, "CatsController") }
@@ -107,7 +107,7 @@ describe Phase8::ControllerBase do
 
   describe "#flash" do
     it "returns a flash instance" do
-      expect(cats_controller.flash).to be_a(Phase8::Flash)
+      expect(cats_controller.flash).to be_a(Flash)
     end
 
     it "returns the same instance on successive invocations" do
