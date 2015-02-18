@@ -43,6 +43,11 @@ class Route
         pattern = /^#{pattern}$/
       end
       @routes << Route.new(pattern, method, controller_class, action_name)
+    if new_url.nil?
+        URLHelper.new(controller_class, action_name).create
+      else
+        controller_class.add_custom_url(new_url)
+      end
     end
 
     # evaluate the proc in the context of the instance
@@ -76,4 +81,5 @@ class Route
         route.run(req, res)
       end
     end
+    
   end
