@@ -1,10 +1,10 @@
 require 'webrick'
-require 'phase5/params'
-require 'phase5/controller_base'
+require 'params'
+require 'controller_base'
 
-describe Phase5::Params do
+describe Params do
   before(:all) do
-    class CatsController < Phase5::ControllerBase
+    class CatsController < ControllerBase
       def index
         @cats = ["Gizmo"]
       end
@@ -17,13 +17,13 @@ describe Phase5::Params do
   let(:cats_controller) { CatsController.new(req, res) }
 
   it "handles an empty request" do
-    expect { Phase5::Params.new(req) }.to_not raise_error
+    expect { Params.new(req) }.to_not raise_error
   end
 
   context "query string" do
     it "handles single key and value" do
       req.query_string = "key=val"
-      params = Phase5::Params.new(req)
+      params = Params.new(req)
       params["key"].should == "val"
     end
 
